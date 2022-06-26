@@ -1,0 +1,34 @@
+<html lang="eu">
+<head>
+	<meta charset="utf-8">
+	<title>post_user_detail</title>
+
+	<style type="text/css">
+		/*задаём общие параметры для всей страницы*/
+		body {
+		  text-align: left;
+		  margin: 10;
+		  font-family:  Arial;
+		  font-size: 20px;
+		}
+	</style>
+</head>
+<body>
+    <hr>
+    <p> {{"Сообщение № "}} {{post_detail.id}}</p>
+    <p> {{ post_detail.dateCreation|date:'d-F-Y' }} / {{"Название -"}} {{ post_detail.title }}  / {{"Текст -"}} {{ post_detail.text }}</p>
+
+   <hr>
+   <p> {{ "Комментарии"}} </p>
+   <hr>
+   {% for comment in comment_post %}
+       <p> {{comment.comment_dateCreation}} / {{"Текст -"}} {{ comment.comment_text }} / {{"Автор -"}} {{ comment.comment_autor }}</p>
+       <hr>
+   {% endfor %}
+
+   <hr>
+            <form action="{% url 'comment_create' post_detail.id %}">
+            <button type="submit">Добавить комментарий</button>
+   <hr>
+
+</body>

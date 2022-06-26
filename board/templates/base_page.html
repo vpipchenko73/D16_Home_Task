@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Base-List</title>
+  	<style type="text/css">
+		/*задаём общие параметры для всей страницы*/
+		body {
+		  text-align: left;
+		  margin: 10;
+		  font-family:  Arial;
+		  font-size: 20px;
+		}
+	</style>
+</head>
+<body>
+<hr>
+     <p>{{ "Добро пожаловать на доску объявлений -'MMORPG'"}}</p>
+     <p>{{"Сегодня-("}}{{time_now|date:'M / d / Y'}} {{value1}}</p>
+     <p>
+         {{"Предлагаем Вам -  'Анонимный посетитель' "}}
+         <a href= "/accounts/login" > войти или зарегистрироваться на портале -</a>
+         это позволит создавать объявления и оставлять комментарии к ним
+     </p>
+<hr>
+<hr>
+     {% if post_all %} <!-- Если есть объявления, то выводим таблицу с ними -->
+        <table>
+            <tr>
+                <td >
+                    Название
+                </td>
+                <td >
+                    Категория
+                </td>
+                <td>
+                    Дата создания
+                </td>
+                <td>
+                    Содержание
+                <td>
+                    Изображение
+                <td>
+                    Вложенный файл
+                <td>
+                    Автор
+                <td>
+                    Кол. комм
+            </tr>
+
+     {% for post in post_all %} <!-- Для каждого объявления будет генерироваться новая строка  -->
+            <tr>
+                <td>
+                   <a href="{% url 'post_detail' post.id %}">{{ post.title}}</a>
+
+                </td>
+                <td>
+                   {{post.get_category_display}}
+                </td>
+                <td>
+                    {{ post.dateCreation|date:'M / d / Y' }}
+                </td>
+                <td>
+                    {{ post.text }}
+                </td>
+                <td>
+                    {% if post.upload_image %}
+                       <a href= {{post.upload_image.url}} target="_blank" >{{"Открыть изображение"}}</a>
+                    {% else %}
+                       {{"Изображения нет"}}
+                    {% endif %}
+                </td>
+                <td>
+                    {% if post.upload_file %}
+                       <a href= {{post.upload_file.url}} target="_blank" >{{"Открыть видео"}}</a>
+                       <!--<a href= {{post.upload_file.url}} target="_blank" >{{post.upload_file.name}}</a>-->
+                    {% else %}
+                       {{"Файл не вложен"}}
+                    {% endif %}
+                </td>
+                <td>
+                    {{ post.autor}}
+                </td>
+                <td>
+                    {{ post.sum_comment}}
+                </td>
+            </tr>
+     {% endfor %}
+     </table>
+     {% else %}
+        <p>Объявлений нет!</p>
+    {% endif %}
+    <hr>
+     <p align="center">
+     <!-- Если доступна предыдущая страница, то даём ссылку на неё и самую первую страницу -->
+       {% if page_obj.has_previous %}
+             <a href="?page=1">First</a>
+             <a href="?page={{ page_obj.previous_page_number }}"><<<</a>
+       {% endif %}
+
+       <!-- Показываем только текущую страницу и ближайшие к ней, чтобы список не тянулся и не захламлял страницу -->
+        {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+                <a>{{ num }}</a>
+            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                <a href="?page={{ num }}">{{ num }}</a>
+            {% endif %}
+        {% endfor %}
+
+         <!-- Если есть следующая страница, то даём ссылку на неё и на самую последнюю страницу -->
+        {% if page_obj.has_next %}
+              <a href="?page={{ page_obj.next_page_number }}">>>></a>
+              <a href="?page={{ page_obj.paginator.num_pages }}">Last</a>
+        {% endif %}
+     </p>
+
+</body>
+</html>

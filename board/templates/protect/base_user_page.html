@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>base_user_page</title>
+  	<style type="text/css">
+		/*задаём общие параметры для всей страницы*/
+		body {
+		  text-align: left;
+		  margin: 10;
+		  font-family:  Arial;
+		  font-size: 20px;
+		}
+	</style>
+</head>
+<body>
+<hr>
+     <p>{{ "Добро пожаловать на доску объявлений -'MMORPG' "}}</p>
+     <p>{{"Сегодня-("}}{{time_now|date:'M / d / Y'}} {{value1}}</p>
+     <p> Страница зарегистрированного пользователя--->>  {{request.user.username}}  </p>
+     <p> На этой странице Вы можете создавать и редактировать свои объявления /
+         делать комментарии к объявлениям других пользователей</p>
+     <p> <a  href="{% url 'ads_user_page' %}"><u>По этой ссылке Вы можете работать с комментариями к своим обьявлениям</u></a> </p>
+
+<hr>
+<hr>
+     {% if post_all %} <!-- Если есть объявления, то выводим таблицу с ними -->
+        <table>
+            <tr>
+                <td >
+                    Название
+                </td>
+                <td >
+                    Категория
+                </td>
+                <td>
+                    Дата создания
+                </td>
+                <td>
+                    Содержание
+                <td>
+                    Изображение
+                <td>
+                    Вложенный файл
+                <td>
+                    Автор
+                <td>
+                    Кол. комм
+                <td>
+                    Действия
+            </tr>
+
+
+     {% for post in post_all %} <!-- Для каждого объявления будет генерироваться новая строка  -->
+            <tr>
+                <td>
+                    <a href="{% url 'post_user_detail' post.id %}">{{ post.title}}</a>
+                </td>
+                <td>
+                   {{post.get_category_display}}
+                </td>
+                <td>
+                    {{ post.dateCreation|date:'M / d / Y' }}
+                </td>
+                <td>
+                    {{ post.text }}
+                </td>
+                <td>
+                    {% if post.upload_image %}
+                       <a href= {{post.upload_image.url}} target="_blank" >{{"Открыть изображение"}}</a>
+                    {% else %}
+                       {{"Изображения нет"}}
+                    {% endif %}
+                </td>
+                <td>
+                    {% if post.upload_file %}
+                       <a href= {{post.upload_file.url}} target="_blank" >{{"Открыть видео"}}</a>
+                    {% else %}
+                       {{"Файл не вложен"}}
+                    {% endif %}
+                </td>
+                <td>
+                    {{ post.autor}}
+                </td>
+                <td>
+                    {{ post.sum_comment}}
+                </td>
+                <td>
+                    {% if post.autor == request.user %}
+                      <a href="{% url 'post_update' post.id %}">{{ "Редактировать"}}</a>
+	                {% else %}
+	                  {{ "Нет прав" }}
+	                {% endif %}
+                </td>
+            </tr>
+     {% endfor %}
+     </table>
+     {% else %}
+        <p>Объявлений нет!</p>
+    {% endif %}
+    <hr>
+     <p align="center">
+     <!-- Если доступна предыдущая страница, то даём ссылку на неё и самую первую страницу -->
+       {% if page_obj.has_previous %}
+             <a href="?page=1">First</a>
+             <a href="?page={{ page_obj.previous_page_number }}"><<<</a>
+       {% endif %}
+
+       <!-- Показываем только текущую страницу и ближайшие к ней, чтобы список не тянулся и не захламлял страницу -->
+        {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+                <a>{{ num }}</a>
+            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                <a href="?page={{ num }}">{{ num }}</a>
+            {% endif %}
+        {% endfor %}
+
+         <!-- Если есть следующая страница, то даём ссылку на неё и на самую последнюю страницу -->
+        {% if page_obj.has_next %}
+              <a href="?page={{ page_obj.next_page_number }}">>>></a>
+              <a href="?page={{ page_obj.paginator.num_pages }}">Last</a>
+        {% endif %}
+
+     </p>
+
+      <hr>
+            <form action="{% url 'post_create' %}">
+            <button type="submit">Добавить новость</button>
+      <hr>
+      </form>
+
+</body>
+</html>
+<button> <a href="../sign/logout/">Выйти</a> </button>

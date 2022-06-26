@@ -1,0 +1,25 @@
+<html lang="eu">
+<head>
+	<meta charset="utf-8">
+	<title>ads_user_detail</title>
+
+	<style type="text/css">
+		/*задаём общие параметры для всей страницы*/
+		body {
+		  text-align: left;
+		  margin: 10;
+		  font-family:  Arial;
+		  font-size: 20px;
+		}
+	</style>
+</head>
+<body>
+<p>Вы действительно хотите принять данный комментарий ?</p>
+<hr>
+<p>{{ ads_comment_detail.comment_dateCreation|date:'d-F-Y' }}</p>
+<p>{{ ads_comment_detail.comment_text }}</p>
+<hr>
+<form method="POST">
+    {% csrf_token %}
+    <input type="submit" value="принять"></form>
+</body>
